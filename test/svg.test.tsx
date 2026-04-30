@@ -320,4 +320,23 @@ describe('SVG', () => {
 
     expect(toImage(svg, 100)).toMatchImageSnapshot()
   })
+
+  it('should render fragments inside svg', async () => {
+    const svg = await satori(
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        <svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'>
+          <>
+            <circle cx='50' cy='50' r='50' style={{ fill: 'gold' }} />
+          </>
+        </svg>
+      </div>,
+      { width: 100, height: 100, fonts }
+    )
+
+    expect(toImage(svg, 100)).toMatchImageSnapshot()
+  })
 })

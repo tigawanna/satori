@@ -1,4 +1,5 @@
-import type { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode, Fragment } from 'react'
+import { Fragment as FragmentSymbol } from '../jsx/jsx-runtime.js'
 import { resolveImageData, cache } from './image.js'
 import { isReactElement, parseViewBox, midline } from '../utils.js'
 
@@ -95,7 +96,11 @@ const ATTRIBUTE_MAPPING = {
 const SVGSymbols = /[\r\n%#()<>?[\\\]^`{|}"']/g
 
 function translateSVGNodeToSVGString(
-  node: ReactElement | string | (ReactElement | string)[],
+  node:
+    | ReactElement
+    | string
+    | typeof Fragment
+    | (ReactElement | string | typeof Fragment)[],
   inheritedColor: string
 ): string {
   if (!node) return ''
@@ -134,6 +139,10 @@ function translateSVGNodeToSVGString(
         .map(([k, _v]) => `${midline(k)}:${_v}`)
         .join(';')}"`
     : ''
+
+  if ((type as typeof node.type | typeof FragmentSymbol) === FragmentSymbol) {
+    return translateSVGNodeToSVGString(children, currentColor)
+  }
 
   return `<${type}${attrs}${styles}>${translateSVGNodeToSVGString(
     children,
